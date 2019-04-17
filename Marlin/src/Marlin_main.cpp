@@ -11149,6 +11149,16 @@ inline void gcode_M502() {
 #endif // FILAMENT_LOAD_UNLOAD_GCODES
 
 #if ENABLED(MAX7219_GCODE)
+
+// happy face
+uint32_t smileyH[8] = { 0x3c, 0x42, 0x99, 0xa5, 0x81, 0xa5, 0x42, 0x3c };
+// neutral face
+uint32_t smileyN[8] = { 0x3c, 0x42, 0x81, 0xbd, 0x81, 0xa5, 0x42, 0x3c };
+// sad face
+uint32_t smileyS[8] = { 0x3c, 0x42, 0xa5, 0x99, 0x81, 0xa5, 0x42, 0x3c };
+// Print in progress
+uint32_t smileyPiP[8] = { 0x3c, 0x00, 0x33, 0x66, 0xcc, 0x66, 0x33, 0x00 };
+
   /**
    * M7219: Control the Max7219 LED matrix
    *
@@ -11206,6 +11216,22 @@ inline void gcode_M502() {
         SERIAL_EOL();
       }
     }
+    if (parser.seen('H'))  
+      for (uint8_t x = 0; x < MAX7219_X_LEDS; x++)
+        max7219.set_column(x, smileyH[x]);
+    
+    if (parser.seen('N')) 
+      for (uint8_t x = 0; x < MAX7219_X_LEDS; x++)
+        max7219.set_column(x, smileyN[x]);
+    
+    if (parser.seen('S'))
+      for (uint8_t x = 0; x < MAX7219_X_LEDS; x++)
+        max7219.set_column(x, smileyS[x]);
+
+    if (parser.seen('R'))
+      for (uint8_t x = 0; x < MAX7219_X_LEDS; x++)
+        max7219.set_column(x, smileyPiP[x]);      
+           
   }
 #endif // MAX7219_GCODE
 

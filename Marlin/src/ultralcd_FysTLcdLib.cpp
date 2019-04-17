@@ -2348,9 +2348,9 @@ static void lcd_period_report(int16_t s) {
   #if ENABLED(BABYSTEPPING)
     //SERIAL_ECHOPGM(" Zoffset:");
     //SERIAL_ECHO((float)zprobe_zoffset); 
-    myFysTLcd.ftCmdStart(VARADDR_PARAM_BABYSTEP);
+    /*myFysTLcd.ftCmdStart(VARADDR_PARAM_BABYSTEP);
     myFysTLcd.ftCmdPutF32(zprobe_zoffset);
-    myFysTLcd.ftCmdSend();
+    myFysTLcd.ftCmdSend();*/
     char buffer[6];
     dtostrf(zprobe_zoffset,6,3,buffer);
     FysTLcd::ftPuts(VARADDR_PARAM_BABYSTEP, buffer, 6);
