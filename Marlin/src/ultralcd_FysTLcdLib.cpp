@@ -94,6 +94,9 @@ int16_t lcd_preheat_fan_speed[FILAMENT_OPE_CHOICES] = { PREHEAT_1_FAN_SPEED, \
 float movDis, movFeedrate;
 // ADD F.H.
 float new_zoffset_up, new_zoffset_down;
+int nb_couche=0; //numero de la couche en cours
+float z_en_cours; // position Z en cours
+// END
 
 generalVoidFun periodFun = nullptr;
 static FysTLcd myFysTLcd;
@@ -1430,6 +1433,7 @@ static void dwin_on_cmd_tool(uint16_t tval) {
   void lcd_sdcard_stop() {
     wait_for_heatup = wait_for_user = false;
     abort_sd_printing = true;
+    SERIAL_ECHOLNPGM("stop!");
     //lcd_setstatusPGM(PSTR(MSG_PRINT_ABORTED), -1);
     //lcd_return_to_status();
   }
@@ -2356,7 +2360,28 @@ static void lcd_period_report(int16_t s) {
     FysTLcd::ftPuts(VARADDR_PARAM_BABYSTEP, buffer, 6);
 
   #endif 
-// END    
+// END  
+
+// ADD F.H 20190513
+//affichage du numero de couche  
+   if (IS_SD_PRINTING) {
+    if (z_en_cours > current_position[Z_AXIS]) // test si extrudeur est redescendu
+      {
+          nb_couche = 1; // impression premiere couche
+          z_en_cours = current_position[Z_AXIS];
+      }
+      
+      // test du changement de niveau de la couche
+      if (z_en_cours != current_position[Z_AXIS])
+      {
+          nb_couche++;// incrementation du nombre de couche
+          z_en_cours = current_position[Z_AXIS];
+      }        
+      myFysTLcd.ftCmdStart(VARADDR_FANS);
+      myFysTLcd.ftCmdPut16(nb_couche);
+      myFysTLcd.ftCmdSend();
+    }
+// END        
 }
 
 static void sendActiveExtrudersParam() {

@@ -29,6 +29,9 @@
 #ifndef _STATUS_SCREEN_DOGM_H_
 #define _STATUS_SCREEN_DOGM_H_
 
+int nb_couche=0; //numero de la couche en cours
+float z_en_cours; // position Z en cours
+
 FORCE_INLINE void _draw_centered_temp(const int16_t temp, const uint8_t x, const uint8_t y) {
   const char * const str = itostr3(temp);
   u8g.setPrintPos(x - (str[0] != ' ' ? 0 : str[1] != ' ' ? 1 : 2) * DOG_CHAR_WIDTH / 2, y);
@@ -431,6 +434,43 @@ static void lcd_implementation_status_screen() {
     }
   }
 
+//affichage du numero de couche  
+   //if (card.isFileOpen()){ //si on est en train d'imprimer depuis la SD 
+    if (z_en_cours > current_position[Z_AXIS]) // test si extrudeur est redescendu
+      {
+          nb_couche = 1; // impression premiÃ¨re couche
+          z_en_cours = current_position[Z_AXIS];
+      }
+      
+      // test du changement de niveau de la couche
+      if (z_en_cours != current_position[Z_AXIS])
+      {
+          nb_couche++;// incrementation du nombre de couche
+          z_en_cours = current_position[Z_AXIS];
+      } 
+      u8g.drawBox(49,3,5,1); //+7 en X
+      u8g.drawBox(48,3,7,4);
+      u8g.drawBox(49,7,5,1);
+      u8g.drawBox(50,8,3,1);
+      u8g.drawBox(51,9,1,1);
+      u8g.drawBox(44,10,7,1);
+      u8g.drawBox(44,12,15,1);
+      u8g.drawBox(44,14,15,1);
+      u8g.drawBox(44,16,15,1);
+  
+      if (nb_couche < 10)
+        u8g.setPrintPos(49, 27);
+      if (nb_couche >= 10 && nb_couche < 100)
+        u8g.setPrintPos(45, 27);
+      if (nb_couche >= 100 && nb_couche < 1000)
+        u8g.setPrintPos(43, 27);
+      if (nb_couche >= 1000 && nb_couche < 10000)
+        u8g.setPrintPos(40, 27);
+         
+      char buf[5];
+      itoa(nb_couche, buf, 10);
+      lcd_print(buf);
+  
   //
   // Feedrate
   //
